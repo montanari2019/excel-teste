@@ -22,19 +22,24 @@ export class AppController {
   async converterExelToJson(@UploadedFile() file: Express.Multer.File){
     console.log(file)
     console.log("Recendo arquivo")
+    const fileType = file.originalname.split('.')[1]
+    console.log("Tipo do arquivo: ", fileType)
     if(file === undefined) throw new NotFoundException('No file');
 
     else{
-      const json = await this.appService.convertExcelToJson(file)
-      console.log("Arquivo convertido")
-      fs.unlink(file.path, err => {
-          if (err) {
-            console.error(err);
-          } else {
-            console.log(`${file.filename} deletado com sucesso.`);
-          }
-        });
-      return json
+
+      if(fileType === 'xlsx'){
+        const json = await this.appService.convertExcelToJson(file)
+        return json
+      }else if(fileType === 'csv'){
+        
+        const json = await this.appService.convertCSVtoJson(file.path)
+        return json
+      }else{
+        throw new NotFoundException('Tipo de arquivo inválido')
+      }
+      
+      
     }
     
   }
