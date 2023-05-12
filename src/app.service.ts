@@ -4,8 +4,8 @@ import * as xlsx from 'xlsx';
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello World!';
+  getHello() {
+    return {message: "Olá"}
   }
 
   async convertExcelToJson(file: Express.Multer.File):  Promise<any[]> {
