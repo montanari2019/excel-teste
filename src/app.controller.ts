@@ -16,7 +16,7 @@ export class AppController {
   @UseInterceptors(FileInterceptor('file', {
     dest: './uploads',
     limits: {
-      fileSize: 1024 * 1024 * 10
+      fileSize: 1024 * 1024 * 20
     }
   }))
   async converterExelToJson(@UploadedFile() file: Express.Multer.File){
