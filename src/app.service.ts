@@ -40,8 +40,8 @@ export class AppService {
             }
 
       result.push(obj)
-      this.deteleFile(filePath)
     }
+    this.deteleFile(filePath)
     return result
    }
 
