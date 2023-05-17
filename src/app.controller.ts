@@ -12,6 +12,18 @@ export class AppController {
     return this.appService.getHello();
   }
 
+  @Post('transponder')
+  @UseInterceptors(FileInterceptor('file', {
+    dest: './uploads',
+    limits: {
+      fileSize: 1024 * 1024 * 20
+    }
+  }))
+  async transponder(@UploadedFile() file: Express.Multer.File){
+   return await this.appService.transposeExcel(file.path)
+  }
+
+  
   @Post('converter')
   @UseInterceptors(FileInterceptor('file', {
     dest: './uploads',
