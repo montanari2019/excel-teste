@@ -22,10 +22,13 @@
   "dependencies": {
     "@nestjs-modules/mailer": "^1.8.1",
     "@nestjs/common": "^9.0.0",
+    "@nestjs/config": "^2.3.2",
     "@nestjs/core": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/schedule": "^2.2.1",
     "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "handlebars": "^4.7.7",
     "hbs": "^4.2.0",
     "nodemailer": "^6.9.2",
     "reflect-metadata": "^0.1.13",

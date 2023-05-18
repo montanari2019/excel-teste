@@ -13,32 +13,47 @@ export class AppService {
     return { message: 'Olá' };
   }
 
-  SendEmail() {
+  async SendEmail(arg?:any, email?: string) {
     console.log('Testando email');
+
     const atualDate = new Intl.DateTimeFormat('pt-BR', {
       dateStyle: 'full',
       timeStyle: 'long',
       timeZone: 'America/Porto_Velho',
     }).format(new Date());
-    this.mailerService
+   
+  
+   await this.mailerService
       .sendMail({
-        to: 'ikaro.bruno@sicoobcredisul.com',
-        from: 'ikaro.montanari31@gmail.com',
+        from: "services-noreply@sicoobcredisul.com.br",
+        to: email,
         subject: `Teste Schedule ${atualDate}`,
-        html: '<h1>Olá teste de mensagem</h1>',
+        template: "forms",
+        context:{
+          payload: arg
+        }
+      })
+      .then((res) => {
+        console.log(res);
       })
       .catch((error) => {
         console.log(`Falha ao enviar email: ${error.message}`);
+        return {message: error}
       });
+
+    return {message: "Email enviado"};
   }
 
-  // @Cron('10 * * * * * ')
-  // RunTask(){
-  //   var counter = 1
-  //   counter += 1
-  //   console.log("Testando uma task Automática: ", counter)
-  //   // this.SendEmail()
-  // }
+
+  @Cron('10 * * * * * ')
+  RunTask(){
+    var counter = 1
+    counter += 1
+    console.log("Testando uma task Automática: ", counter)
+    const args = {message: "Ramon, não está ruim que não possa ficar pior, sempre se lembre disso <3"}
+    const email= "ramon.lazaro@sicoobcredisul.com.br"
+    this.SendEmail(args, email)
+  }
 
   async transposeExcel(filePath: string): Promise<any[]> {
     const workbook = xlsx.readFile(filePath);
@@ -87,16 +102,18 @@ export class AppService {
 
   formatValue(valor: number) {
 
-    console.log("Valor", valor)
+   
 
     if(typeof valor === 'number'){
+      console.log('formatValue is number')
       const data = new Date(1900, 0, Number(valor));
       if(!isNaN(data.getTime())){
         return data.getTime()
-
+        
       }
-
+      
     }else if(typeof valor === 'string'){
+      console.log('formatValue is string')
       const data = new Date(valor)
       return data
       // console.log(data);

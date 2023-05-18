@@ -12,6 +12,11 @@ export class AppController {
     return this.appService.getHello();
   }
 
+  @Get('email')
+  async enviarEmail(){
+     return await this.appService.SendEmail()
+  }
+
   @Post('transponder')
   @UseInterceptors(FileInterceptor('file', {
     dest: './uploads',

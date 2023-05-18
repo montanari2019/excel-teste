@@ -1,23 +1,35 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ScheduleModule } from "@nestjs/schedule"
+import { ScheduleModule } from '@nestjs/schedule';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { join } from 'path';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     ScheduleModule.forRoot(),
     MailerModule.forRoot({
       transport: {
-        host:'smtp.gmail.com',
-        ignoreTLS: true,
-        port: 465,
-        secure: true,
+        host: process.env.HOST_EMAIL,
+        port: Number(process.env.PORT_EMAIL),
+        requireTLS: true,
+        secure: false,
         auth: {
-          user: 'ikaro.montanari31@gmail.com',
-          pass: '#Mm992023'
-        }
-      }
+          user: process.env.LOGIN_EMAIL,
+          pass: process.env.PASSWORD_EMAIL,
+        },
+        tls: {
+          ciphers: 'SSLv3',
+        },
+      },
+      
+      template: {
+        dir: join(__dirname, 'mailer'),
+        adapter: new HandlebarsAdapter(),
+      },
     }),
   ],
   controllers: [AppController],
