@@ -104,6 +104,13 @@ export class AppService {
 
   }
 
+  convertToTimezone(date: Date): Date {
+    date.setDate(date.getDate() - 1)
+    const utcDate = new Date(date.toLocaleString('en-US', { timeZone: 'UTC' }));
+    const targetDate = new Date(utcDate.toLocaleString('en-US', { timeZone: "America/Porto_Velho" }));
+    return targetDate;
+  }
+
   formatValue(valor: number) {
 
    
@@ -112,13 +119,12 @@ export class AppService {
       console.log('formatValue is number')
       const data = new Date(1900, 0, Number(valor));
       if(!isNaN(data.getTime())){
-        return data.getTime()
-        
+        return this.convertToTimezone(new Date(data.getTime()))
       }
       
     }else if(typeof valor === 'string'){
       console.log('formatValue is string')
-      const data = new Date(valor)
+      const data = this.convertToTimezone(new Date(valor))
       return data
       // console.log(data);
             
