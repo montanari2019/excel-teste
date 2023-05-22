@@ -5,6 +5,10 @@ import * as fs from 'fs';
 import { Cron } from '@nestjs/schedule';
 import { type } from 'os';
 
+interface Dado {
+  [key: string]: any;
+}
+
 @Injectable()
 export class AppService {
   constructor(private readonly mailerService: MailerService) {}
@@ -45,15 +49,15 @@ export class AppService {
   }
 
 
-  @Cron('10 * * * * * ')
-  RunTask(){
-    var counter = 1
-    counter += 1
-    console.log("Testando uma task Automática: ", counter)
-    const args = {message: "Ramon, não está ruim que não possa ficar pior, sempre se lembre disso <3"}
-    const email= "ramon.lazaro@sicoobcredisul.com.br"
-    this.SendEmail(args, email)
-  }
+  // @Cron('10 * * * * * ')
+  // RunTask(){
+  //   var counter = 1
+  //   counter += 1
+  //   console.log("Testando uma task Automática: ", counter)
+  //   const args = {message: "Ramon, não está ruim que não possa ficar pior, sempre se lembre disso <3"}
+  //   const email= "ramon.lazaro@sicoobcredisul.com.br"
+  //   this.SendEmail(args, email)
+  // }
 
   async transposeExcel(filePath: string): Promise<any[]> {
     const workbook = xlsx.readFile(filePath);
@@ -127,12 +131,54 @@ export class AppService {
     } else {
       const workBook = xlsx.readFile(file.path);
       const sheet_name_list = workBook.SheetNames;
-      const json_data = xlsx.utils.sheet_to_json(
+      const json_data: Dado[]  = xlsx.utils.sheet_to_json(
         workBook.Sheets[sheet_name_list[0]],
       );
+      const json_data1 = xlsx.utils.sheet_to_json(workBook.Sheets[sheet_name_list[1]])
+
+      
+      
+     
+      
+      const formatarChaves = (dados: Dado[]): Dado[] => {
+        return dados.map((obj: Dado) => {
+          const novoObj: Dado = {};
+          for (let chave in obj) {
+            const novaChave = chave.replace(/ /g, "_").toLocaleLowerCase().normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/ç/g, "C");;
+            novoObj[novaChave] = obj[chave];
+          }
+          return novoObj;
+        });
+      };
+      
+      const dadosFormatados1 = formatarChaves(json_data);
+      const newDadosFormatado1 = dadosFormatados1.map((index)=>{
+        return {...index, data_movimento: new Date(this.formatValue(index.data_movimento))}
+      })
+
+
+      const dadosFormatados2 = formatarChaves(json_data1);
+
+      const newDadosFormatado2 = dadosFormatados2.map((index)=>{
+        return {...index, data_movimento: new Date(this.formatValue(index.data_movimento))}
+      })
+
+
+
+
+      
+     
+
+
+      console.log("Chaves do ojeto", Object.keys(json_data[0]))
 
       this.deteleFile(file.path);
-      return json_data;
+      return [
+        {planilha01: newDadosFormatado1},
+        {planilha02: newDadosFormatado2},
+      ];
     }
   }
 
